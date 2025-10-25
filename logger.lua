@@ -183,6 +183,9 @@ function Logger:_find_override(fname)
     return nil
 end
 
+-- Override builtin function
+-- - fname: function name to override
+-- - callable: function to be replaced with
 function Logger:builtin_override(fname, callable)
     local i = self:_find_override(fname)
     local orig = self._ENV[fname] or _G[fname]
@@ -195,6 +198,8 @@ function Logger:builtin_override(fname, callable)
     rawset(self._ENV, fname, callable)
 end
 
+-- Restore original builtin function
+-- - fname: function name to restore
 function Logger:builtin_restore(fname)
     local i = self:_find_override(fname)
     if i then
@@ -383,13 +388,16 @@ function Logger:_prepare_env()
 end
 
 -- set function to be called before each hooked function is ran, if it returns false won't run function.
--- 1st argument is array of arguments that were passed to function.
--- 2nd argument is function name.
--- 3rd argument is table string name function is called from
+-- - 1st argument of fn is array of arguments that were passed to function.
+-- - 2nd argument of fn is function name.
+-- - 3rd argument of fn is table string name function is called from
 function Logger:set_custom_callback(fn)
     self._custom_fn = fn
 end
 
+-- Run code in sandbox
+-- - runnable: string/function: Code to run
+-- - NOTE: if it is function, it must return string that contains code
 function Logger:run(runnable)
     assert(type(runnable) == "string" or type(runnable) == "function")
     self:_prepare_env()
